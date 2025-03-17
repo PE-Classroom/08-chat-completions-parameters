@@ -18,27 +18,40 @@ chatForm.addEventListener('submit', async (event) => {
   // Add the user's message to the conversation history
   messages.push({ role: 'user', content: userInput.value });
 
-  // Send a POST request to the OpenAI API
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST', // We are POST-ing data to the API
-    headers: {
-      'Content-Type': 'application/json', // Set the content type to JSON
-      'Authorization': `Bearer ${apiKey}` // Include the API key for authorization
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o',
-      messages: messages
-    })
-  });
+  try {
+    // Send a POST request to the OpenAI API
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST', // We are POST-ing data to the API
+      headers: {
+        'Content-Type': 'application/json', // Set the content type to JSON
+        'Authorization': `Bearer ${apiKey}` // Include the API key for authorization
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: messages,
+        max_completion_tokens: 800,
+        temperature: 0.5,
+        frequency_penalty: 0.8,
+      })
+    });
 
-  // Parse and store the response data
-  const result = await response.json();
+    // Check if the response is not ok
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-  // Add the AI's response to the conversation history
-  messages.push({ role: 'assistant', content: result.choices[0].message.content });
+    // Parse and store the response data
+    const result = await response.json();
 
-  // Display the response on the page
-  responseContainer.textContent = result.choices[0].message.content;
+    // Add the AI's response to the conversation history
+    messages.push({ role: 'assistant', content: result.choices[0].message.content });
+
+    // Display the response on the page
+    responseContainer.textContent = result.choices[0].message.content;
+  } catch (error) {
+    console.error('Error:', error); // Log the error
+    responseContainer.textContent = 'Sorry, something went wrong. Please try again later.'; // Show error message to the user
+  }
 
   // Clear the input field
   userInput.value = '';
