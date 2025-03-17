@@ -1,4 +1,4 @@
-// Get references to the DOM elements
+// Get references to the HTML elements
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
 const responseContainer = document.getElementById('response');
@@ -25,7 +25,6 @@ chatForm.addEventListener('submit', async (event) => {
       'Content-Type': 'application/json', // Set the content type to JSON
       'Authorization': `Bearer ${apiKey}` // Include the API key for authorization
     },
-    // Send model details and conversation history
     body: JSON.stringify({
       model: 'gpt-4o',
       messages: messages
